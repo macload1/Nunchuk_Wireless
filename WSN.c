@@ -96,7 +96,7 @@ volatile unsigned char test2;
 unsigned char sequence;
 
 /*
- * 
+ * Receiver code
  */
 int main(int argc, char** argv)
 {

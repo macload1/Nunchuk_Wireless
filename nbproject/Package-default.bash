@@ -10,9 +10,9 @@ CND_CONF=default
 CND_DISTDIR=dist
 TMPDIR=build/${CND_CONF}/${IMAGE_TYPE}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/Nunchuk_Wireless.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-OUTPUT_BASENAME=Nunchuk_Wireless.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-PACKAGE_TOP_DIR=nunchukwireless.x/
+OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/Nunchuk_Wireless.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+OUTPUT_BASENAME=Nunchuk_Wireless.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+PACKAGE_TOP_DIR=nunchukwireless/
 
 # Functions
 function checkReturnCode
@@ -57,15 +57,15 @@ mkdir -p ${TMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory ${TMPDIR}/nunchukwireless.x/bin
+makeDirectory ${TMPDIR}/nunchukwireless/bin
 copyFileToTmpDir "${OUTPUT_PATH}" "${TMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}" 0755
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f ${CND_DISTDIR}/${CND_CONF}/package/nunchukwireless.x.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/package/nunchukwireless.tar
 cd ${TMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/nunchukwireless.x.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/nunchukwireless.tar *
 checkReturnCode
 
 # Cleanup
