@@ -10,6 +10,7 @@
       <itemPath>GenericTypeDefs.h</itemPath>
       <itemPath>TimeDelay.h</itemPath>
       <itemPath>Bk_rxtx.h</itemPath>
+      <itemPath>nunchuk.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -25,6 +26,7 @@
       <itemPath>Interrupts.c</itemPath>
       <itemPath>TimeDelay.c</itemPath>
       <itemPath>Bk_rxtx.c</itemPath>
+      <itemPath>nunchuk.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

@@ -12,11 +12,8 @@
 extern "C" {
 #endif
 
-//_CONFIG2(FNOSC_PRIPLL & POSCMOD_XT)		// Primary XT OSC with 4x PLL
-//_CONFIG1(JTAGEN_OFF & FWDTEN_OFF)		// JTAG off, watchdog timer off
-
 // PIC24F processor
-#define GetSystemClock()		(8000000ul)      // Hz
+#define GetSystemClock()		(32000000ul)      // Hz
 #define GetInstructionClock()	(GetSystemClock()/2)
 #define GetPeripheralClock()	GetInstructionClock()
 
@@ -26,5 +23,4 @@ extern "C" {
 }
 #endif
 
-#endif	/* __HARDWARE_PROFILE_H */
-
+#endif /* __HARDWARE_PROFILE_H */

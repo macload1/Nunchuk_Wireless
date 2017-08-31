@@ -14,6 +14,8 @@ volatile RFDATAPKT g_RFSendData;		//RF send data package;
 
 extern volatile UINT32 Bk2423_Bank1_Reg0_13[];
 
+extern volatile unsigned char I2CData[];
+
 /****************************************************************************
 Function:             	void RF_SendData( UINT8 *pSnd, UINT8 Len )
 Parameter:
@@ -127,7 +129,13 @@ void FillDataPacket( UINT8 Cmd , UINT8 Type)
         break;
     case 0x02:           //Send Packet Length = 4+6  
         g_RFSendData.Length   =   10;       
-        memset( (UINT8*)&g_RFSendData.Param[0] , 0x58, 6 );          
+        //memset( (UINT8*)&g_RFSendData.Param[0] , 0x58, 6 );
+        g_RFSendData.Param[0] = I2CData[0];
+        g_RFSendData.Param[1] = I2CData[1];
+        g_RFSendData.Param[2] = I2CData[2];
+        g_RFSendData.Param[3] = I2CData[3];
+        g_RFSendData.Param[4] = I2CData[4];
+        g_RFSendData.Param[5] = I2CData[5];
         break;
     case 0x03:           //Send Packet Length = 4+16
         g_RFSendData.Length  =   20;      

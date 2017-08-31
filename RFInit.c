@@ -103,28 +103,28 @@ void Bk2423_BANK0_Init( void )
 {
     UINT8  i  = 0x00 , k = 0x00;
 
-//Bank0 Register Configuration Operate============================================
+    //Bank0 Register Configuration Operate============================================
     for( i = 0; i < 21; i++ )
 	{
-    SPI_Write_Reg( W_REGISTER | Bk2423_Bank0_Reg[i][0], Bk2423_Bank0_Reg[i][1] );
-    SPI_Read_Reg( Bk2423_Bank0_Reg[i][0] );   
+        SPI_Write_Reg( W_REGISTER | Bk2423_Bank0_Reg[i][0], Bk2423_Bank0_Reg[i][1] );
+        SPI_Read_Reg( Bk2423_Bank0_Reg[i][0] );   
 	}
 
-//Write RX/TX Address============================================================
+    //Write RX/TX Address============================================================
 	RF_SET_RX_ADDR( &RX_Address[0] );
 	RF_SET_TX_ADDR( &RX_Address[0] );
 
  	k = SPI_Read_Reg( FEATURE );
 	if( k == 0 )
 	{
-    SPI_Write_Reg( ACTIVATE,  0X73 );
+        SPI_Write_Reg( ACTIVATE,  0X73 );
 	}
 
-//Bank0_Register Configuration Operat===========================================
+    //Bank0_Register Configuration Operat===========================================
 	for( i = 21; i < 23; i++  )							
 	{
-    SPI_Write_Reg( W_REGISTER | Bk2423_Bank0_Reg[i][0], Bk2423_Bank0_Reg[i][1] );
-    SPI_Read_Reg( Bk2423_Bank0_Reg[i][0] );
+        SPI_Write_Reg( W_REGISTER | Bk2423_Bank0_Reg[i][0], Bk2423_Bank0_Reg[i][1] );
+        SPI_Read_Reg( Bk2423_Bank0_Reg[i][0] );
 	}
 
 }
@@ -143,33 +143,33 @@ void Bk2423_BANK1_Init( void )
 {
     UINT8 i= 0x00,j= 0x00,Buff[4] = {0};
 
-//Configuration Bank1 Register0 to Register8====================================  
+    //Configuration Bank1 Register0 to Register8====================================  
     for( i = 0; i < 9; i++ )
     {
-    for( j = 0; j < 4; j++ )
-    {
-        Buff[j] = (UINT8)(( Bk2423_Bank1_Reg0_13[i] >> ( 8 *(j) ) ) & 0xff );   
-    }	
-    SPI_Write_Buf( W_REGISTER | i, &(Buff[0]), 4 );
+        for( j = 0; j < 4; j++ )
+        {
+            Buff[j] = (UINT8)(( Bk2423_Bank1_Reg0_13[i] >> ( 8 *(j) ) ) & 0xff );   
+        }	
+        SPI_Write_Buf( W_REGISTER | i, &(Buff[0]), 4 );
     }
 
-//Configuration Bank1 Register9 to Register13===================================
+    //Configuration Bank1 Register9 to Register13===================================
     for( i = 9; i < 14; i++ )
     {
-    for( j = 0; j < 4; j++ )
-    {
-        Buff[j] = (UINT8)( Bk2423_Bank1_Reg0_13[i] >> 8 * (3-j) & 0xff );
-    }
-    SPI_Write_Buf( W_REGISTER | i, &(Buff[0]), 4 );
+        for( j = 0; j < 4; j++ )
+        {
+            Buff[j] = (UINT8)( Bk2423_Bank1_Reg0_13[i] >> 8 * (3-j) & 0xff );
+        }
+        SPI_Write_Buf( W_REGISTER | i, &(Buff[0]), 4 );
     }
 
-//Configuration  Bank1 Register 14==============================================
+    //Configuration  Bank1 Register 14==============================================
     SPI_Write_Buf( W_REGISTER | 0x0e,&(Bk2423_Bank1_Reg14[0]),11 );
 
-//toggle Reg4[25-26]============================================================
+    //toggle Reg4[25-26]============================================================
     for( i = 0; i < 4; i++ )
     {
-    Buff[i] = (UINT8)(( Bk2423_Bank1_Reg0_13[4] >> 8*(i)) & 0xff );
+        Buff[i] = (UINT8)(( Bk2423_Bank1_Reg0_13[4] >> 8*(i)) & 0xff );
     }
     Buff[0] |= 0x06;
     SPI_Write_Buf( W_REGISTER | 0X04, &(Buff[0]), 4 );
@@ -348,17 +348,17 @@ void Set_PowerMode( UINT8 power_mode )
 
     if( power_mode == POWER_UP_MODE )    
     {
-    temp_value  |= ( 1 << 1 );      //Enable Power up mode
-    SPI_Write_Reg( W_REGISTER | CONFIG, temp_value );
+        temp_value  |= ( 1 << 1 );      //Enable Power up mode
+        SPI_Write_Reg( W_REGISTER | CONFIG, temp_value );
 
-    SET_CE();
+        SET_CE();
     }
     else
     {   
-    CLR_CE();
+        CLR_CE();
 
-    temp_value  &= ~( 1 << 1 );      //Enable Power Down mode
-    SPI_Write_Reg( W_REGISTER | CONFIG, temp_value );
+        temp_value  &= ~( 1 << 1 );      //Enable Power Down mode
+        SPI_Write_Reg( W_REGISTER | CONFIG, temp_value );
     }
 }
 
@@ -379,16 +379,16 @@ void Set_SenMode(UINT8 b_enable )
 
 	for( j = 0x00;j < 0x04; j++ )
     {
-    WriteArr[j] =  ( Bk2423_Bank1_Reg0_13[4]>>(8*(j) ) )&0xff;
+        WriteArr[j] =  ( Bk2423_Bank1_Reg0_13[4]>>(8*(j) ) )&0xff;
     }
 
     if( b_enable )
     {
-    WriteArr[1] =   WriteArr[1] | 0x20;  //Set REG4<21>
+        WriteArr[1] =   WriteArr[1] | 0x20;  //Set REG4<21>
     }
     else
     {
-    WriteArr[1] =   WriteArr[1] & 0xdf;  //Clear REG4<21>
+        WriteArr[1] =   WriteArr[1] & 0xdf;  //Clear REG4<21>
     }
 
     //write REG4

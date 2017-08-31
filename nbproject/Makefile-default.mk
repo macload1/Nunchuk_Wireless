@@ -51,17 +51,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=WSN.c RF_SPI.c RFInit.c Interrupts.c TimeDelay.c Bk_rxtx.c
+SOURCEFILES_QUOTED_IF_SPACED=WSN.c RF_SPI.c RFInit.c Interrupts.c TimeDelay.c Bk_rxtx.c nunchuk.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/WSN.o ${OBJECTDIR}/RF_SPI.o ${OBJECTDIR}/RFInit.o ${OBJECTDIR}/Interrupts.o ${OBJECTDIR}/TimeDelay.o ${OBJECTDIR}/Bk_rxtx.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/WSN.o.d ${OBJECTDIR}/RF_SPI.o.d ${OBJECTDIR}/RFInit.o.d ${OBJECTDIR}/Interrupts.o.d ${OBJECTDIR}/TimeDelay.o.d ${OBJECTDIR}/Bk_rxtx.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/WSN.o ${OBJECTDIR}/RF_SPI.o ${OBJECTDIR}/RFInit.o ${OBJECTDIR}/Interrupts.o ${OBJECTDIR}/TimeDelay.o ${OBJECTDIR}/Bk_rxtx.o ${OBJECTDIR}/nunchuk.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/WSN.o.d ${OBJECTDIR}/RF_SPI.o.d ${OBJECTDIR}/RFInit.o.d ${OBJECTDIR}/Interrupts.o.d ${OBJECTDIR}/TimeDelay.o.d ${OBJECTDIR}/Bk_rxtx.o.d ${OBJECTDIR}/nunchuk.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/WSN.o ${OBJECTDIR}/RF_SPI.o ${OBJECTDIR}/RFInit.o ${OBJECTDIR}/Interrupts.o ${OBJECTDIR}/TimeDelay.o ${OBJECTDIR}/Bk_rxtx.o
+OBJECTFILES=${OBJECTDIR}/WSN.o ${OBJECTDIR}/RF_SPI.o ${OBJECTDIR}/RFInit.o ${OBJECTDIR}/Interrupts.o ${OBJECTDIR}/TimeDelay.o ${OBJECTDIR}/Bk_rxtx.o ${OBJECTDIR}/nunchuk.o
 
 # Source Files
-SOURCEFILES=WSN.c RF_SPI.c RFInit.c Interrupts.c TimeDelay.c Bk_rxtx.c
+SOURCEFILES=WSN.c RF_SPI.c RFInit.c Interrupts.c TimeDelay.c Bk_rxtx.c nunchuk.c
 
 
 CFLAGS=
@@ -130,6 +130,13 @@ ${OBJECTDIR}/Bk_rxtx.o: Bk_rxtx.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE)  Bk_rxtx.c  -o ${OBJECTDIR}/Bk_rxtx.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Bk_rxtx.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1    -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -I"C:/Microchip Solutions v2012-10-15/Microchip/Include" -I"../WSN.X" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/Bk_rxtx.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
+${OBJECTDIR}/nunchuk.o: nunchuk.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/nunchuk.o.d 
+	@${RM} ${OBJECTDIR}/nunchuk.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  nunchuk.c  -o ${OBJECTDIR}/nunchuk.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/nunchuk.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1    -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -I"C:/Microchip Solutions v2012-10-15/Microchip/Include" -I"../WSN.X" -msmart-io=1 -Wall -msfr-warn=off  
+	@${FIXDEPS} "${OBJECTDIR}/nunchuk.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
 else
 ${OBJECTDIR}/WSN.o: WSN.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -172,6 +179,13 @@ ${OBJECTDIR}/Bk_rxtx.o: Bk_rxtx.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/Bk_rxtx.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  Bk_rxtx.c  -o ${OBJECTDIR}/Bk_rxtx.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Bk_rxtx.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -I"C:/Microchip Solutions v2012-10-15/Microchip/Include" -I"../WSN.X" -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/Bk_rxtx.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/nunchuk.o: nunchuk.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/nunchuk.o.d 
+	@${RM} ${OBJECTDIR}/nunchuk.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  nunchuk.c  -o ${OBJECTDIR}/nunchuk.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/nunchuk.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -I"C:/Microchip Solutions v2012-10-15/Microchip/Include" -I"../WSN.X" -msmart-io=1 -Wall -msfr-warn=off  
+	@${FIXDEPS} "${OBJECTDIR}/nunchuk.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 endif
 
