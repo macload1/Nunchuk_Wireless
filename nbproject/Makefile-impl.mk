@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=Nunchuk_Wireless.X
+PROJECTNAME=Nunchuk_Sender.X
 
 # Active Configuration
 DEFAULTCONF=default
