@@ -123,7 +123,7 @@ int main(int argc, char** argv)
 
     while(1)
     {
-        DelayMs(1000);
+        DelayMs(10);
         nunchuk_read();
         FillDataPacket( 0xCA , 0x02 );
         RF_SendData( (UINT8*)&g_RFSendData , g_RFSendData.Length );
