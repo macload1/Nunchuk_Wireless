@@ -20,31 +20,23 @@
 
 #define LED                 LATBbits.LATB7
 
-#define RF_PKT_LEN		    25		//RF Packet length for transfer
 
-/*struct defination for RF transmit packet*/
-typedef struct
-{
-    UINT8   sn;     //serial number for rf packet, increased each send ops
-    UINT8   len;    //packet valid data length in param
-    UINT8   sn_pkt; //packet serial number, increased for each new data packet
-    UINT8   param[RF_PKT_LEN];
-}S_RF_PKT;
+#define FORWARD_LEFT        LATBbits.LATB2
+#define FORWARD_RIGHT       LATAbits.LATA2
+#define BACKWARD_LEFT       LATBbits.LATB8
+#define BACKWARD_RIGHT      LATAbits.LATA3
+
+
+#define MIDDLEPOINT_FB      139
+#define MIDDLEPOINT_LR      136
 
 extern volatile RFDATAPKT g_RFSendData;		//RF send data package;
-
-//void RF_Recv_Process( void );
-//void RF_Send_Process( void );
-//void RF_FillPacket( void );
-//void RF_SendPacket( void );
 
 void timerInit(void);
 void outcompareInit(void);
 void CNInit(void);
 
 /* PIC24F32KA301 Configuration Bit Settings */
-
-
 // FBS
 #pragma config BWRP = OFF               // Boot Segment Write Protect (Disabled)
 #pragma config BSS = OFF                // Boot segment Protect (No boot program flash segment)
@@ -81,7 +73,7 @@ void CNInit(void);
 #pragma config MCLRE = ON               // MCLR Pin Enable bit (RA5 input pin disabled,MCLR pin enabled)
 
 // FICD
-#pragma config ICS = PGx1               // ICD Pin Placement Select bits (EMUC/EMUD share PGC1/PGD1)
+#pragma config ICS = PGx2               // ICD Pin Placement Select bits (EMUC/EMUD share PGC2/PGD2)
 
 // FDS
 #pragma config DSWDTPS = DSWDTPSF       // Deep Sleep Watchdog Timer Postscale Select bits (1:2,147,483,648 (25.7 Days))
@@ -90,24 +82,16 @@ void CNInit(void);
 #pragma config DSWDTEN = OFF            // Deep Sleep Watchdog Timer Enable bit (DSWDT disabled)
 
 
-/* Global Variables */
-static volatile S_RF_PKT g_rf_packet;      //packet buffer for rf transmit
-
-char data_string[30];
-
-long temperatur;
-INT32 pressure;
-UINT32 press;
-
-volatile unsigned char test;
-volatile unsigned char test2;
-unsigned char sequence;
-
 /*
  * Receiver code
  */
 int main(int argc, char** argv)
 {
+    UINT16 duty_fb;         // Duty cycle for forward/backward control
+    UINT16 duty_lr;         // Duty cycle for left/right control
+    UINT16 duty_l;          // Duty cycle for left control
+    UINT16 duty_r;          // Duty cycle for left control
+    
     CLKDIVbits.RCDIV = 0;   // Sets System to 32MHz CLK
 
     // Pins to digital
@@ -118,16 +102,24 @@ int main(int argc, char** argv)
     TRISBbits.TRISB7 = 0;   // Output compare 1 pin with LED
     LED = 0;                // LED switched off
     
+    FORWARD_LEFT = 0;
+    FORWARD_RIGHT = 0;
+    BACKWARD_LEFT = 0;
+    BACKWARD_RIGHT = 0;
+    TRISAbits.TRISA2 = 0;
+    TRISAbits.TRISA3 = 0;
+    TRISBbits.TRISB2 = 0;
+    TRISBbits.TRISB8 = 0;
+    
+    
     // timer 1 & 2 Initialisation
     timerInit();
     
     // Output Compare 0 Initialisation
-    //outcompareInit();
+    outcompareInit();
     
     // Change Notification Initialisation
     CNInit();
-    
-    sprintf(data_string, "Hello World!");
 
 
     // Initialisation
@@ -140,25 +132,78 @@ int main(int argc, char** argv)
 //    Set_OutPower( BK2423_P3 );          //Output Power    =   3dBm
 //    Set_AirRate( BK2423_RATE_250K );    //AirRate         =   250Kbps
 
-    g_rf_packet.len = 20;
-    g_rf_packet.sn = 7;
-    g_rf_packet.sn_pkt = 15;
-
-    //RF_Send_Process();
-    FillDataPacket( 0xCA , 0x02 );
-    RF_SendData( (UINT8*)&g_RFSendData , g_RFSendData.Length );
-
-    test = SPI_Read_Reg(RF_CH);
-
-    test2 = Get_ChipID();
-    sequence = 0;
-
+    SwitchtoRXMode();
+    
     while(1)
     {
-        DelayMs(1000);
-
-        FillDataPacket( 0xCA , 0x02 );
-        RF_SendData( (UINT8*)&g_RFSendData , g_RFSendData.Length );
+        if(RFRecvPacket())
+        {
+            if(g_RFRecData.Length > 0)
+            {
+                duty_lr = g_RFRecData.Param[0];  // Left/Right joystick
+                duty_fb = g_RFRecData.Param[1];  // Forward/Backward joystick
+                
+                duty_lr += 0xFF;
+                duty_lr -= MIDDLEPOINT_LR;
+                duty_fb += 0xFF;
+                duty_fb -= MIDDLEPOINT_FB;
+                if(duty_lr >= 256)
+                {
+                    duty_lr -= 0xFF;
+                    duty_l = duty_fb + duty_lr/2;
+                    duty_r = duty_fb - duty_lr/2;
+                }
+                else
+                {
+                    duty_lr = 0xFF - duty_lr;
+                    duty_l = duty_fb - duty_lr/2;
+                    duty_r = duty_fb + duty_lr/2;
+                }
+                if(duty_l >= 256)
+                {
+                    BACKWARD_LEFT = 0;
+                    FORWARD_LEFT = 1;
+                    duty_l -= 0xFF;
+                }
+                else
+                {
+                    FORWARD_LEFT = 0;
+                    BACKWARD_LEFT = 1;
+                    duty_l = 0xFF - duty_l;
+                }
+                if(duty_r >= 256)
+                {
+                    BACKWARD_RIGHT = 0;
+                    FORWARD_RIGHT = 1;
+                    duty_r -= 0xFF;
+                }
+                else
+                {
+                    FORWARD_RIGHT = 0;
+                    BACKWARD_RIGHT = 1;
+                    duty_r = 0xFF - duty_r;
+                }
+                
+                duty_l *= 4;
+                if(duty_l > 1000)
+                    duty_l = 1000;
+                duty_r *= 4;
+                if(duty_r > 1000)
+                    duty_r = 1000;
+                
+//                if((g_RFRecData.Param[5] & 0x02) == 0x00)
+//                {
+//                    duty_l *= 2;
+//                    if(duty_l > 1000)
+//                        duty_l = 1000;
+//                    duty_r *= 2;
+//                    if(duty_r > 1000)
+//                        duty_r = 1000;
+//                }
+                SetDCOC2PWM(duty_l, 1000);
+                SetDCOC3PWM(duty_r, 1000);
+            }
+        }
     }
 
     return (EXIT_SUCCESS);
@@ -181,15 +226,71 @@ void timerInit(void)
     OpenTimer2(T2_ON &      //Timer2 ON
             T2_IDLE_CON &
             T2_GATE_OFF &   //Gated mode OFF
-            T2_PS_1_8 &     //Prescale 1:8
-            T2_SOURCE_INT, 250);
+            T2_PS_1_1 &     //Prescale 1:8
+            T2_SOURCE_INT, 50);
     
     return;
 }
 
 void outcompareInit(void)
 {
-    OpenOC1(
+//    OpenOC1(
+//         // Sets OC1CON1
+//         OC_IDLE_CON           &
+//         OC_TIMER2_SRC         &
+//         OC_FAULT0_IN_DISABLE  &
+//         OC_FAULT1_IN_DISABLE  &
+//         CMP_FAULT2_IN_DISABLE &
+//         OC_PWM_FAULT_CLEAR    &
+//         OC_TRIG_CLEAR_SYNC    &
+//         OC_PWM_EDGE_ALIGN,
+//         
+//         // Sets OC1CON2
+//         OC_FAULT_MODE_PWM_CYCLE &
+//         OC_PWM_FAULT_OUT_HIGH   &
+//         OC_FAULT_PIN_UNCHANGE   &
+//         OC_OUT_NOT_INVERT       &
+//         DELAY_OC_FALL_EDGE_00   &
+//         OC_CASCADE_DISABLE      &
+//         OC_SYNC_ENABLE          &
+//         OC_TRIGGER_TIMER        &
+//         OC_DIRN_OUTPUT          &
+//         OC_SYNC_TRIG_IN_CURR_OC,
+//         
+//         // Period
+//         1000,          // 1000 => 250 µs period
+//         // On-time
+//         500);
+    
+    OpenOC2(
+         // Sets OC1CON1
+         OC_IDLE_CON           &
+         OC_TIMER2_SRC         &
+         OC_FAULT0_IN_DISABLE  &
+         OC_FAULT1_IN_DISABLE  &
+         CMP_FAULT2_IN_DISABLE &
+         OC_PWM_FAULT_CLEAR    &
+         OC_TRIG_CLEAR_SYNC    &
+         OC_PWM_EDGE_ALIGN,
+         
+         // Sets OC1CON2
+         OC_FAULT_MODE_PWM_CYCLE &
+         OC_PWM_FAULT_OUT_HIGH   &
+         OC_FAULT_PIN_UNCHANGE   &
+         OC_OUT_NOT_INVERT       &
+         DELAY_OC_FALL_EDGE_00   &
+         OC_CASCADE_DISABLE      &
+         OC_SYNC_ENABLE          &
+         OC_TRIGGER_TIMER        &
+         OC_DIRN_OUTPUT          &
+         OC_SYNC_TRIG_IN_CURR_OC,
+         
+         // Period
+         1000,          // 1000 => 250 µs period
+         // On-time
+         500);
+    
+    OpenOC3(
          // Sets OC1CON1
          OC_IDLE_CON           &
          OC_TIMER2_SRC         &
